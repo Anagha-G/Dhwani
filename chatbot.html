@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBot</title>
+    <link href="style.css" rel="stylesheet" type="text/css" media="all" />
+</head>
+<header>
+    <h2 class="logo">Dhwani</h2>
+    <nav id="nav-bar">
+        <a href="index.html">Home</a>
+        <a href="#">Login</a>
+    </nav>
+</header>
+<body>
+    <section>
+        <form>
+            <div class="container">
+                <div class="header">
+                    <h1>Dhwani</h1>
+                    <p>A Personal Voice Assistant</p>
+                </div>
+                <div class="chat-container">
+                    <div class="chat-box" id="chat-box">
+                        <!-- Chat messages will be appended here -->
+                    </div>
+                    <input type="text" id="user-input" placeholder="Type your message...">
+                    <button onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+
+            <script>
+                async function sendMessage() {
+                    var userInput = document.getElementById('user-input').value;
+                    if (userInput.trim() !== '') {
+                        var chatBox = document.getElementById('chat-box');
+                        var userMessage = '<div class="message user-message">' + userInput + '</div>';
+                        chatBox.innerHTML += userMessage;
+            
+                        // Send user input to the backend
+                        try {
+                            const response = await fetch('http://localhost:8000/speak', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ message: userInput })
+                            });
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            const data = await response.json();
+            
+                            // Display response from the backend
+                            var botMessage = '<div class="message bot-message">' + data.response + '</div>';
+                            chatBox.innerHTML += botMessage;
+                        } catch (error) {
+                            console.error('Error:', error);
+                        }
+            
+                        // Scroll to the bottom of the chat box
+                        chatBox.scrollTop = chatBox.scrollHeight;
+                        
+                        // Clear the input field
+                        document.getElementById('user-input').value = '';
+                    }
+                }
+            </script>
+            
+    </form>
+    </section>
+</body>
+</html>
